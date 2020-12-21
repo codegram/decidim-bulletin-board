@@ -5,6 +5,14 @@
   "addons": [
     "heroku-postgresql:hobby-basic"
   ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/timanovsky/subdir-heroku-buildpack"
+    },
+    {
+      "url": "heroku/ruby"
+    }
+  ],
   "success_url": "/api",
   "scripts": {
     "postdeploy":"bundle exec rake db:schema:load db:seed"
@@ -17,6 +25,10 @@
     "SECRET_KEY_BASE": {
       "description": "A secret used by Rails to identify sessions",
       "generator": "secret"
+    },
+    "PROJECT_PATH": {
+      "description": "The path to the rails app.",
+      "value": "decidim-bulletin_board-app"
     }
   }
 }
