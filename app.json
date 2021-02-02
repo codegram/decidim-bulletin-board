@@ -3,9 +3,13 @@
   "description": "Decidim Bulletin Board Staging - an Encryption Engine and an Append-Only Log for Decidim framework",
   "keywords": [],
   "addons": [
-    "heroku-postgresql:hobby-basic"
+    "heroku-postgresql:hobby-basic",
+    "heroku-redis:hobby-dev"
   ],
   "buildpacks": [
+    {
+      "url": "https://github.com/gaffneyc/heroku-buildpack-jemalloc"
+    },
     {
       "url": "https://github.com/timanovsky/subdir-heroku-buildpack.git"
     },
