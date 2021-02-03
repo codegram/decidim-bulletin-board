@@ -8,6 +8,6 @@ module.exports = merge(common, {
     contentBase: "./dist",
   },
   output: {
-    filename: "decidim-bulletin_board.dev.js",
+    filename: "decidim-bulletin_board.js",
   },
 });

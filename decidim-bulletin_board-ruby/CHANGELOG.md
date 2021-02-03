@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Production file now is called `decidim-bulletin_board.js` and development file is called `decidim-bulletin_board.dev.js`.
+- Production file now is called `decidim-bulletin_board.js` and development file is called `decidim-bulletin_board.js`.
 
 ### Removed
 
