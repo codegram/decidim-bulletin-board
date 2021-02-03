@@ -3,13 +3,15 @@
 module Decidim
   module BulletinBoard
     module Authority
-      # This command uses the GraphQL client to get the status of the election.
-      class GetElectionStatus < Decidim::BulletinBoard::Command
+      # This command uses the GraphQL client to get the log entries of an election.
+      class GetElectionLogEntriesByTypes < Decidim::BulletinBoard::Command
         # Public: Initializes the command.
         #
-        # election_id - The local election identifier
-        def initialize(election_id)
+        # election_id [String] - The local election identifier
+        # types [Array of Strings] - The message types you want to filter the log entries with
+        def initialize(election_id, types)
           @election_id = election_id
+          @types = types
         end
 
         # Executes the command. Broadcasts these events:
@@ -21,25 +23,28 @@ module Decidim
         def call
           # arguments used inside the graphql operation
           args = {
-            unique_id: unique_election_id(election_id)
+            unique_id: unique_election_id(election_id),
+            types: types
           }
 
           response = client.query do
             query do
               election(uniqueId: args[:unique_id]) do
-                status
+                logEntries(types: args[:types]) do
+                  signedData
+                end
               end
             end
           end
 
-          broadcast(:ok, response.data.election.status)
+          broadcast(:ok, response.data.election.log_entries)
         rescue Graphlient::Errors::ServerError
           broadcast(:error, "Sorry, something went wrong")
         end
 
         private
 
-        attr_reader :election_id
+        attr_reader :election_id, :types
       end
     end
   end

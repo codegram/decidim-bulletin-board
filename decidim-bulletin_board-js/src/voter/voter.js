@@ -1,6 +1,5 @@
 import { VoterWrapper } from "./voter_wrapper_dummy";
-
-export const WAIT_TIME_MS = 1_000; // 1s
+import { JWTParser } from "../jwt_parser";
 
 /**
  * This is a facade class that will use the correspondig `VoterWrapper` to encrypt
@@ -12,48 +11,61 @@ export class Voter {
    *
    * @constructor
    * @param {Object} params - An object that contains the initialization params.
-   *  - {String} id - The voter identifier.
+   *  - {String} uniqueId - The voter identifier.
+   *  - {Object} election - An object that interacts with a specific election
+   *                        to get some data and perform the vote.
+   *  - {Client} bulletinBoardClient - An instance of the Bulletin Board Client
    */
-  constructor({ id, bulletinBoardClient, electionContext, options }) {
-    this.id = id;
-    this.wrapper = new VoterWrapper({ voterId: id });
+  constructor({ uniqueId, election, bulletinBoardClient }) {
+    this.uniqueId = uniqueId;
+    this.election = election;
     this.bulletinBoardClient = bulletinBoardClient;
-    this.electionContext = electionContext;
-    this.options = options || { bulletinBoardWaitTime: WAIT_TIME_MS };
+    this.wrapper = new VoterWrapper({ voterId: uniqueId });
+    this.parser = new JWTParser();
+  }
+
+  /**
+   * Performs some operations to setup the voter.
+   *
+   * Retrieves the key ceremony messages needed to cast a vote in the given election.
+   *
+   * @returns {Promise<undefined>}
+   */
+  setup() {
+    return this.bulletinBoardClient
+      .getElectionLogEntries({
+        electionUniqueId: this.election.uniqueId,
+      })
+      .then(async (logEntries) => {
+        for (const logEntry of logEntries) {
+          const message = await this.parser.parse(logEntry.signedData);
+          this.wrapper.processMessage(logEntry.messageId, message);
+        }
+      });
   }
 
   /**
    * Encrypts the data using the wrapper.
    *
-   * @param {Object} data - The data to be.
-   * @returns {Object} - The data encrypted.
+   * @param {Object} data - The data to be encrypted.
+   * @returns {Promise<Object>} - The data encrypted and its hash.
    */
   async encrypt(data) {
-    return this.wrapper.encrypt(data);
-  }
+    const encryptedVote = await this.wrapper.encrypt(data);
 
-  /**
-   * Confirms if a vote was processed
-   *
-   * @param {Object} messageId - An object that includes the following options.
-   *  - {String} messageId - the unique identifier of a message
-   * @returns {Promise<Object>} - Returns the PendingMessage
-   */
-  waitForPendingMessageToBeProcessed(messageId) {
-    return new Promise((resolve, reject) => {
-      const intervalId = setInterval(() => {
-        this.bulletinBoardClient
-          .getPendingMessageByMessageId({
-            messageId,
-          })
-          .then((pendingMessage) => {
-            if (pendingMessage.status !== "enqueued") {
-              clearInterval(intervalId);
-              resolve(pendingMessage);
-            }
-          });
-      }, this.options.bulletinBoardWaitTime);
-    });
+    return window.crypto.subtle
+      .digest("SHA-256", new TextEncoder().encode(encryptedVote))
+      .then((hashBuffer) => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+
+        return {
+          encryptedVote,
+          encryptedVoteHash: hashHex,
+        };
+      });
   }
 
   /**
@@ -64,7 +76,7 @@ export class Voter {
    * @returns {Promise<Object>} - Returns a logEntry
    */
   verifyVote(contentHash) {
-    const { id: electionUniqueId } = this.electionContext;
+    const { uniqueId: electionUniqueId } = this.election;
 
     return this.bulletinBoardClient.getLogEntry({
       electionUniqueId,
