@@ -1,7 +1,5 @@
-GIT
-  remote: https://github.com/decidim/decidim-bulletin-board
-  revision: 191e11f096218dee47b56e9b019e79e35581004a
-  ref: 191e11f096218dee47b56e9b019e79e35581004a
+PATH
+  remote: ../decidim-bulletin_board-ruby
   specs:
     decidim-bulletin_board (0.14.0)
       byebug (~> 11.0)
