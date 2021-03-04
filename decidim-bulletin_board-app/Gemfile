@@ -44,7 +44,7 @@ gem "sprockets-es6"
 
 gem "factory_bot_rails"
 
-gem "decidim-bulletin_board", "0.14.0"
+gem "decidim-bulletin_board", { git: "https://github.com/decidim/decidim-bulletin-board", ref: "191e11f096218dee47b56e9b019e79e35581004a" }
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
