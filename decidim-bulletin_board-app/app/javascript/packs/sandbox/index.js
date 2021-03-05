@@ -32,11 +32,11 @@ $(async () => {
         "X-CSRF-Token": $("meta[name=csrf-token]").attr("content"),
       },
     })
-    .done(() => {
-      $(event.target).closest(".generate-votes-input-section").hide();
-      $downloadVotesButton.css("display", "inline");
-    })
-    .fail(() => $(event.target).html(`Failed, retry!`));
+      .done(() => {
+        $(event.target).closest(".generate-votes-input-section").hide();
+        $downloadVotesButton.css("display", "inline");
+      })
+      .fail(() => $(event.target).html(`Failed, retry!`));
   });
 
 });
