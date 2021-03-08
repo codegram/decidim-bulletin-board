@@ -36,12 +36,13 @@
             <% elsif election.vote? %>
               <%= link_to "Vote", vote_sandbox_election_path(election) %> |
               <%= link_to "End vote", end_vote_sandbox_election_path(election) %>  |
+              <%= link_to "Load test stats", load_test_stats_sandbox_election_path(election, earliest_vote_time: 2.hours.ago), download: "load_test_stats.json" %>  |
               <button class="show-input-button"> Generate bulk votes </button>
               <div class="generate-votes-input-section">
                 <input class="generate-votes-input" type="number" placeholder="How many votes?" value="<%= default_bulk_votes_number %>"/>
                 <button class="generate-votes-button">Generate votes</button>
               </div>
-              <%= link_to "Download votes", download_bulk_votes_sandbox_election_path(election), class: "download-votes-button", download: 'bulk_votes.csv' %>
+              <%= link_to "Download votes", download_bulk_votes_sandbox_election_path(election), class: "download-votes-button", download: "bulk_votes.csv" %>
             <% elsif election.vote_ended? %>
               <%= link_to "Start tally", start_tally_sandbox_election_path(election) %>
             <% elsif election.tally? %>
