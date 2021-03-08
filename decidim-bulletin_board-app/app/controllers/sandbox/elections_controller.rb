@@ -55,6 +55,14 @@ module Sandbox
       )
     end
 
+    def load_test_stats
+      Sandbox::LoadTestStats.new(election.id, earliest_vote_for_stats).call
+      send_file(
+        Sandbox::LoadTestStats::STATS_OUTPUT_FILE_PATH,
+        type: "application/json"
+      )
+    end
+
     def end_vote
       bulletin_board_client.end_vote(election_id)
       go_back
@@ -232,6 +240,10 @@ module Sandbox
 
     def joint_election_key
       @joint_election_key ||= JSON.parse(election.log_entries.where(message_type: "end_key_ceremony").last.decoded_data["content"])["joint_election_key"]
+    end
+
+    def earliest_vote_for_stats
+      @earliest_vote_for_stats ||= params[:earliest_vote_time].presence
     end
   end
 end
