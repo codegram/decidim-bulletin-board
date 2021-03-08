@@ -1,0 +1,50 @@
+{
+  "name": "Decidim Bulletin Board Staging",
+  "description": "Decidim Bulletin Board Staging - an Encryption Engine and an Append-Only Log for Decidim framework",
+  "keywords": [],
+  "addons": [
+    "heroku-postgresql:hobby-basic",
+    "heroku-redis:hobby-dev"
+  ],
+  "stack": "container",
+  "buildpacks": [
+    {
+      "url": "https://github.com/gaffneyc/heroku-buildpack-jemalloc"
+    },
+    {
+      "url": "https://github.com/timanovsky/subdir-heroku-buildpack.git"
+    },
+    {
+      "url": "heroku/ruby"
+    }
+  ],
+  "scripts": {
+    "postdeploy":"bundle exec rake db:schema:load db:seed"
+  },
+  "env": {
+    "HEROKU_APP_NAME": {
+      "description": "Needed for review apps",
+      "required": false
+    },
+    "SECRET_KEY_BASE": {
+      "description": "A secret used by Rails to identify sessions",
+      "generator": "secret"
+    },
+    "PROJECT_PATH": {
+      "description": "The path to the app for subdir-heroku-buildpack",
+      "value": "decidim-bulletin_board-app"
+    },
+    "CORS_ORIGIN_ALLOWED": {
+      "description": "cors",
+      "value": "*"
+    },
+    "SEED": {
+      "description": "Seeds",
+      "value": "true"
+    },
+    "IDENTIFICATION_PRIVATE_KEY":{
+      "description": "app private key",
+      "value": ""
+    }
+  }
+}
