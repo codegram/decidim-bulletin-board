@@ -8,3 +8,5 @@ This repository follows the monorepo pattern and includes the following projects
 ## License
 
 See [Decidim](https://github.com/decidim/decidim).
+
+## JUST TO DEMO
