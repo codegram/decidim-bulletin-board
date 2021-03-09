@@ -12,4 +12,3 @@ test:
 
 production:
   <<: *default
-  cors_origin_allowed: <%= ENV["CORS_ORIGIN_ALLOWED"] %>
