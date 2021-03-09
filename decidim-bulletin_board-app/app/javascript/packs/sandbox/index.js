@@ -17,7 +17,7 @@ $(async () => {
     const votesToGenerate = $(event.target)
       .siblings(".generate-votes-input")
       .val();
-    $(event.target).html(`Generating ${votesToGenerate} votes...`);
+    $(event.target).html(`Launching generation...`);
     $(event.target).prop("disabled", true);
 
     $.ajax({
@@ -31,7 +31,7 @@ $(async () => {
         "X-CSRF-Token": $("meta[name=csrf-token]").attr("content"),
       },
     })
-      .done(() => $(event.target).html(`${votesToGenerate} votes generated!`))
+      .done(() => location.reload())
       .fail(() => $(event.target).html(`Failed, retry!`));
   });
 });
