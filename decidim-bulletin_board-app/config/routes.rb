@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   scope "/api" do
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/api"
@@ -31,4 +33,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  mount Sidekiq::Web => "/sidekiq"
 end
