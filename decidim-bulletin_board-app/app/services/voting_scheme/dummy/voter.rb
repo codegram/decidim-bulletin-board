@@ -4,24 +4,10 @@ module VotingScheme
   module Dummy
     # A dummy implementation of a voter adapter, only for tests purposes.
     # It uses a very basic math to perform simple but unsecure encryption operations,
-    # similar to a real voting scheme implementation. 
+    # similar to a real voting scheme implementation.
 
     class Voter < VotingScheme::Voter
       include Dummy
-
-      def process_message(message_identifier, message)
-        method_name = :"process_#{message_identifier.type}_message"
-        content = parse_content(message)
-        return [] unless respond_to?(method_name, true)
-
-        @response = nil
-        method(method_name).call(message_identifier, message, content)
-        if @response
-          [@response]
-        else
-          []
-        end
-      end
 
       def encrypt(vote)
         {
