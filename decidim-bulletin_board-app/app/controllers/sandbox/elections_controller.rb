@@ -56,9 +56,9 @@ module Sandbox
     end
 
     def load_test_stats
-      Sandbox::LoadTestStats.new(election.id, earliest_vote_for_stats).call
+      Sandbox::GenerateLoadTestStats.new(election.id).call
       send_file(
-        Sandbox::LoadTestStats::STATS_OUTPUT_FILE_PATH,
+        Sandbox::GenerateLoadTestStats::STATS_OUTPUT_FILE_PATH,
         type: "application/json"
       )
     end
@@ -228,10 +228,6 @@ module Sandbox
 
     def generated_votes_number
       `wc -l "#{BULK_VOTES_FILE_PATH}"`.strip.split(" ")[0].to_i
-    end
-
-    def earliest_vote_for_stats
-      @earliest_vote_for_stats ||= params[:earliest_vote_time].presence
     end
   end
 end
