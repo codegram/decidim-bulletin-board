@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "redis"
+
 module Sandbox
   class GenerateVotesJob < ApplicationJob
     def perform(number_of_votes, election_id, file_path, client_settings = {})
@@ -20,6 +22,8 @@ module Sandbox
         encrypted_ballot = voter_adapter.encrypt(random_plaintext_ballot)
         client.cast_vote(election.unique_id.split(".").last, SecureRandom.hex, encrypted_ballot)
       end
+
+      upload_result
     end
 
     attr_reader :election_id, :file_path, :client_settings
@@ -50,6 +54,14 @@ module Sandbox
 
     def log_entry_for(message_type)
       election.log_entries.where(message_type: message_type).last
+    end
+
+    def upload_result
+      upload_url = `curl --upload-file #{file_path} https://transfer.sh/bulk_votes.csv`.strip
+
+      Redis.new.set("bulk_votes_file", upload_url)
+    rescue => error
+      Redis.new.set("bulk_votes_file", error.message)
     end
   end
 end
