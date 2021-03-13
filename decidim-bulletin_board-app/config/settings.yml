@@ -1,5 +1,5 @@
 default: &default
-  iat_expiration_minutes: 1440
+  iat_expiration_minutes: 10080
   create_election:
     hours_before: 2
   cors_origin_allowed: "*"
